@@ -1,4 +1,6 @@
 name: BorderProtect
 version: 1.0
-api-version: 1.14
-main: com.mcsunnyside.BorderProtect.Main
+api-version: 1.13
+main: com.ghostchu.borderprotect.BorderProtect
+softdepend:
+  - Essentials

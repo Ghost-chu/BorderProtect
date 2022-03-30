@@ -1,0 +1,10 @@
+message:
+  warning-teleport: "&cYou're trying teleport outside of world boarder, that will cause you death immediately, the teleport has been canceled."
+  warning-portal: "&cYou're trying going through portal but destination at out of world border, that will cause you death immediately, the teleport has been canceled."
+  warning-join: "&cYou're trying to join the game but you're not inside of world border, that will cause you death immediately, You has been teleport to world spawn."
+  warning-respawn: "&cYou're trying to respawn to a position out of world border, that will cause you death immediately, You has been teleport to world spawn."
+management:
+  teleport: true
+  portal: true
+  join: true
+  respawn: true
