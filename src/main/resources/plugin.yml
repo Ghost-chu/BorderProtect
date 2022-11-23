@@ -1,4 +1,4 @@
 name: BorderProtect
 version: ${version}
 api-version: 1.13
-main: com.ghostchu.borderprotect.BorderProtect
+main: com.ghostchu.borderprotect.Main
