@@ -19,6 +19,7 @@ import java.util.Set;
 
 public class Main extends JavaPlugin implements Listener {
     private final Set<Chunk> cancelledChunk = new HashSet<>();
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -26,72 +27,96 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
-    // World unload clean up
-    @EventHandler(ignoreCancelled = true,priority = EventPriority.MONITOR)
-    public void worldCleanup(WorldUnloadEvent event){
-        cancelledChunk.removeIf(c->c.getWorld().equals(event.getWorld()));
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void worldCleanup(WorldUnloadEvent event) {
+        cancelledChunk.removeIf(c -> c.getWorld().equals(event.getWorld()));
     }
 
-    @EventHandler(ignoreCancelled = true,priority = EventPriority.HIGHEST)
-    public void onTeleport(PlayerTeleportEvent e){
-        if(!getConfig().getBoolean("management.teleport",false))
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onTeleport(PlayerTeleportEvent e) {
+        if (!getConfig().getBoolean("management.teleport", false)) {
             return;
-        if(e.getTo() == null)
+        }
+        if (e.getTo() == null) {
             return;
-        if(e.getTo().getWorld() == null)
+        }
+        if (e.getTo().getWorld() == null) {
             return;
-        if(e.getTo().getWorld().getWorldBorder().isInside(e.getTo()))
+        }
+        if (e.getTo().getWorld().getWorldBorder().isInside(e.getTo())) {
             return;
-        if(e.getPlayer().getGameMode() != GameMode.SURVIVAL && e.getPlayer().getGameMode() != GameMode.ADVENTURE)
+        }
+        if (e.getPlayer().getGameMode() != GameMode.SURVIVAL && e.getPlayer().getGameMode() != GameMode.ADVENTURE) {
             return;
+        }
         e.setCancelled(true);
         e.getPlayer().sendMessage(getConfig().getString("message.warning-teleport"));
         e.getTo().getChunk().unload(false);
     }
-    @EventHandler(ignoreCancelled = true,priority = EventPriority.HIGHEST)
-    public void onTeleport(PlayerPortalEvent e){
-        if(!getConfig().getBoolean("management.portal",false))
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onTeleport(PlayerPortalEvent e) {
+        if (!getConfig().getBoolean("management.portal", false)) {
             return;
-        if(e.getTo() == null)
+        }
+        if (e.getTo() == null) {
             return;
-        if(e.getTo().getWorld() == null)
+        }
+        if (e.getTo().getWorld() == null) {
             return;
-        if(e.getTo().getWorld().getWorldBorder().isInside(e.getTo()))
+        }
+        if (e.getTo().getWorld().getWorldBorder().isInside(e.getTo())) {
             return;
-        if(e.getPlayer().getGameMode() != GameMode.SURVIVAL && e.getPlayer().getGameMode() != GameMode.ADVENTURE)
+        }
+        if (e.getPlayer().getGameMode() != GameMode.SURVIVAL && e.getPlayer().getGameMode() != GameMode.ADVENTURE) {
             return;
+        }
         e.setCancelled(true);
         e.getPlayer().sendMessage(getConfig().getString("message.warning-portal"));
         e.getTo().getChunk().unload(false);
     }
-    @EventHandler(ignoreCancelled = true,priority = EventPriority.HIGHEST)
-    public void onTeleport(PlayerJoinEvent e){
-        if(!getConfig().getBoolean("management.join",false))
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onTeleport(PlayerJoinEvent e) {
+        if (!getConfig().getBoolean("management.join", false)) {
             return;
-        if(e.getPlayer().getWorld().getWorldBorder().isInside(e.getPlayer().getLocation()))
+        }
+        if (e.getPlayer().getWorld().getWorldBorder().isInside(e.getPlayer().getLocation())) {
             return;
-        if(e.getPlayer().getGameMode() != GameMode.SURVIVAL && e.getPlayer().getGameMode() != GameMode.ADVENTURE)
+        }
+        if (e.getPlayer().getGameMode() != GameMode.SURVIVAL && e.getPlayer().getGameMode() != GameMode.ADVENTURE) {
             return;
+        }
         e.getPlayer().teleport(e.getPlayer().getWorld().getSpawnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
         e.getPlayer().sendMessage(getConfig().getString("message.warning-join"));
     }
-    @EventHandler(ignoreCancelled = true,priority = EventPriority.HIGHEST)
-    public void onTeleport(PlayerRespawnEvent e){
-        if(!getConfig().getBoolean("management.respawn",false))
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onTeleport(PlayerRespawnEvent e) {
+        if (!getConfig().getBoolean("management.respawn", false)) {
             return;
-        if(e.getPlayer().getWorld().getWorldBorder().isInside(e.getPlayer().getLocation()))
+        }
+        if (e.getPlayer().getWorld().getWorldBorder().isInside(e.getPlayer().getLocation())) {
             return;
-        if(e.getPlayer().getGameMode() != GameMode.SURVIVAL && e.getPlayer().getGameMode() != GameMode.ADVENTURE)
+        }
+        if (e.getPlayer().getGameMode() != GameMode.SURVIVAL && e.getPlayer().getGameMode() != GameMode.ADVENTURE) {
             return;
+        }
         e.getPlayer().teleport(e.getPlayer().getWorld().getSpawnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
         e.getPlayer().sendMessage(getConfig().getString("message.warning-respawn"));
         e.setRespawnLocation(e.getPlayer().getWorld().getSpawnLocation());
     }
-    @EventHandler(ignoreCancelled = true,priority = EventPriority.MONITOR)
-    public void onTeleport(ChunkUnloadEvent e){
-        if(!cancelledChunk.contains(e.getChunk()))
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onTeleport(ChunkUnloadEvent e) {
+        if (!getConfig().getBoolean("avoid-out-of-border-loaded-by-accident-chunk-save", false)) {
             return;
+        }
+        if (!cancelledChunk.contains(e.getChunk())) {
+            return;
+        }
         e.setSaveChunk(false);
-        getLogger().info("Chunk save at "+e.getChunk().getWorld().getName()+"#"+e.getChunk().getX()+"#"+e.getChunk().getZ()+" has been cancelled, because it is created/loaded by teleport to a position that out of side of the border");
+        cancelledChunk.remove(e.getChunk());
+        getLogger().info("Chunk save at " + e.getChunk().getWorld().getName() + "#" + e.getChunk().getX() + "#" + e.getChunk().getZ() + " has been cancelled, because it is created/loaded by teleport to a position that out of side of the border.");
     }
 }

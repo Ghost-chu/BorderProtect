@@ -8,3 +8,4 @@ management:
   portal: true
   join: true
   respawn: true
+  avoid-out-of-border-loaded-by-accident-chunk-save: true
