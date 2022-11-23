@@ -1,6 +1,4 @@
 name: BorderProtect
-version: 1.0
+version: ${version}
 api-version: 1.13
 main: com.ghostchu.borderprotect.BorderProtect
-softdepend:
-  - Essentials
